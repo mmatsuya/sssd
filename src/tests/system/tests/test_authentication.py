@@ -7,6 +7,7 @@ SSSD Authentication Test Cases
 from __future__ import annotations
 
 import re
+import time
 
 import pytest
 from sssd_test_framework.roles.client import Client
@@ -41,6 +42,7 @@ def test_authentication__user_login(client: Client, provider: GenericProvider, m
     if method == "ssh" and "ssh" not in client.sssd.sssd["services"]:
         client.sssd.sssd["services"] = "nss, pam, ssh"
     client.sssd.start(service_user=sssd_service_user)
+    time.sleep(1)
 
     assert client.auth.parametrize(method).password("user1", "Secret123"), "User failed login!"
     assert not client.auth.parametrize(method).password(
@@ -80,6 +82,7 @@ def test_authentication__user_login_then_changes_password(
     provider.user("user1").add(password=old_password)
 
     client.sssd.start()
+    time.sleep(1)
 
     assert not client.auth.passwd.password(
         "user1", old_password, new_password, retyped=invalid_password
@@ -125,6 +128,7 @@ def test_authentication__user_login_then_changes_password_with_complexity_requir
     provider.password_policy.complexity(enable=True)
 
     client.sssd.start()
+    time.sleep(1)
 
     assert not client.auth.passwd.password(
         "user1", old_password, invalid_password
@@ -172,6 +176,7 @@ def test_authentication__user_is_forced_to_change_expired_password_before_login(
 
     user = provider.user("user1").add(password=old_pass)
     client.sssd.start(service_user=sssd_service_user)
+    time.sleep(1)
 
     assert client.auth.ssh.password(user.name, old_pass), "User failed to authenticate!"
     user.password_change_at_logon(password=old_pass)
@@ -217,6 +222,7 @@ def test_authentication__user_login_when_the_provider_is_offline(
     client.sssd.pam["offline_credentials_expiration"] = "0"
 
     client.sssd.start(service_user=sssd_service_user)
+    time.sleep(1)
     assert client.auth.parametrize(method).password("user1", "Secret123"), "User failed login!"
 
     client.firewall.outbound.reject_host(provider)
@@ -281,6 +287,7 @@ def test_authentication__user_login_when_the_provider_is_offline_and_pam_sss_use
     client.fs.write("/etc/pam.d/password-auth", pam_auth)
 
     client.sssd.start(service_user=sssd_service_user)
+    time.sleep(1)
 
     assert "use_first_pass" in client.fs.read(
         "/etc/pam.d/system-auth"
@@ -328,6 +335,7 @@ def test_disable_an2ln(client: Client, provider: GenericProvider):
 
     client.fs.rm("/var/lib/sss/pubconf/krb5.include.d/localauth_plugin")
     client.sssd.start()
+    time.sleep(1)
 
     with client.ssh("tuser", "Secret123") as ssh:
         with client.auth.kerberos(ssh) as krb:
@@ -367,6 +375,7 @@ def test_ensure_localauth_plugin_is_not_configured(client: Client, provider: Gen
 
     client.fs.rm("/var/lib/sss/pubconf/krb5.include.d/localauth_plugin")
     client.sssd.start()
+    time.sleep(1)
 
     with client.ssh("tuser", "Secret123") as ssh:
         with client.auth.kerberos(ssh) as krb:
