@@ -1310,22 +1310,13 @@ fallback_homedir = /home/%u
                             Default: <quote>*</quote>
                         </para>
                         <para>
-<<<<<<< HEAD
-                            Note: This option can also be set per-domain which
-                            overwrites the value in [nss] section.
-                        </para>
-                        <para>
-                            Default: <quote>not set</quote> (remote domains),
+                            Default (per-domain): <quote>not set</quote> (remote
+                            domains),
                             <phrase condition="with_files_provider">
                                 <quote>x</quote> (the files domain),
                             </phrase>
                             <quote>x</quote> (proxy domain with nss_files
                             and sssd-shadowutils target)
-=======
-                            Default (per-domain): <quote>not set</quote> (remote
-                            domains), <quote>x</quote> (proxy domain with
-                            nss_files and sssd-shadowutils target)
->>>>>>> e3f869d7a (man: document pwfield per-domain usage in NSS section)
                         </para>
                     </listitem>
                 </varlistentry>
